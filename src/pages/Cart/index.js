@@ -1,4 +1,6 @@
 import React from "react";
+import { connect } from "react-redux";
+import swal from "sweetalert";
 import {
   MdRemoveCircleOutline,
   MdAddCircleOutline,
@@ -6,66 +8,20 @@ import {
 } from "react-icons/md";
 
 import { Container, TableProducts, Total } from "./styles";
-import { formatPrice } from "../../util/format";
+function Cart({ products, dispatch }) {
+  const handleRemoveProduct = async product => {
+    const choice = await swal("Deseja realmente remover o produto?", {
+      buttons: ["Não", "Sim, remova"],
+    });
 
-const products = [
-  {
-    id: "1",
-    name: "Tenis muito legal",
-    img:
-      "https://static.netshoes.com.br/produtos/tenis-de-caminhada-leve-confortavel/06/E74-0492-006/E74-0492-006_zoom1.jpg",
-    price: 129.9,
-    quantity: 3,
-  },
-  {
-    id: "2",
-    name: "Tenis muito legal",
-    img:
-      "https://static.netshoes.com.br/produtos/tenis-de-caminhada-leve-confortavel/06/E74-0492-006/E74-0492-006_zoom1.jpg",
-    price: 129.9,
-    quantity: 3,
-  },
-  {
-    id: "3",
-    name: "Tenis muito legal",
-    img:
-      "https://static.netshoes.com.br/produtos/tenis-de-caminhada-leve-confortavel/06/E74-0492-006/E74-0492-006_zoom1.jpg",
-    price: 129.9,
-    quantity: 3,
-  },
-  {
-    id: "4",
-    name: "Tenis muito legal",
-    img:
-      "https://static.netshoes.com.br/produtos/tenis-de-caminhada-leve-confortavel/06/E74-0492-006/E74-0492-006_zoom1.jpg",
-    price: 129.9,
-    quantity: 3,
-  },
-  {
-    id: "5",
-    name: "Tenis muito legal",
-    img:
-      "https://static.netshoes.com.br/produtos/tenis-de-caminhada-leve-confortavel/06/E74-0492-006/E74-0492-006_zoom1.jpg",
-    price: 129.9,
-    quantity: 3,
-  },
-  {
-    id: "6",
-    name: "Tenis muito legal",
-    img:
-      "https://static.netshoes.com.br/produtos/tenis-de-caminhada-leve-confortavel/06/E74-0492-006/E74-0492-006_zoom1.jpg",
-    price: 129.9,
-    quantity: 3,
-  },
-];
+    if (choice) {
+      dispatch({
+        type: "REMOVE_FROM_CART",
+        productId: product.id,
+      });
+    }
+  };
 
-const totalPrice = formatPrice(
-  products.reduce(
-    (result, current) => (result += current.price * current.quantity)
-  )
-);
-
-export default function Cart() {
   return (
     <Container>
       <TableProducts>
@@ -83,28 +39,31 @@ export default function Cart() {
           {products.map(product => (
             <tr key={product.id}>
               <td>
-                <img src={product.img} alt={product.name} />
+                <img src={product.image} alt={product.name} />
               </td>
               <td>
                 <strong>{product.name}</strong>
-                <strong>R$ {product.price}</strong>
+                <strong>{product.formattedPrice}</strong>
               </td>
               <td>
                 <div>
                   <button type='button'>
                     <MdRemoveCircleOutline size={20} color='#5960c1' />
                   </button>
-                  <input type='number' readOnly value={product.quantity} />
+                  <input type='number' readOnly value={product.amount} />
                   <button type='button'>
                     <MdAddCircleOutline size={20} color='#5960c1' />
                   </button>
                 </div>
               </td>
               <td>
-                <span>{(product.price * product.quantity).toFixed(2)}</span>
+                <span>teste</span>
               </td>
               <td>
-                <button type='button'>
+                <button
+                  type='button'
+                  onClick={() => handleRemoveProduct(product)}
+                >
                   <MdDelete size={20} color='#5960c1' />
                 </button>
               </td>
@@ -117,9 +76,15 @@ export default function Cart() {
         <button type='button'>Finalizar pedido</button>
         <Total>
           <span>TOTAL</span>
-          <strong>{totalPrice}</strong>
+          <strong>{1}</strong>
         </Total>
       </footer>
     </Container>
   );
 }
+
+const mapStateToProps = state => ({
+  products: state.cart,
+});
+
+export default connect(mapStateToProps)(Cart);

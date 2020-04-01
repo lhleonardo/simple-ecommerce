@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { connect } from "react-redux";
 import { MdAddShoppingCart } from "react-icons/md";
 import { ProductList, Product } from "./styles";
 
@@ -6,58 +7,7 @@ import api from "../../services/api";
 
 import { formatPrice } from "../../util/format";
 
-// const products = [
-//   {
-//     id: "1",
-//     name: "Tenis muito legal",
-//     img:
-//       "https://static.netshoes.com.br/produtos/tenis-de-caminhada-leve-confortavel/06/E74-0492-006/E74-0492-006_zoom1.jpg",
-//     price: 129.9,
-//     quantity: 3,
-//   },
-//   {
-//     id: "2",
-//     name: "Tenis muito legal",
-//     img:
-//       "https://static.netshoes.com.br/produtos/tenis-de-caminhada-leve-confortavel/06/E74-0492-006/E74-0492-006_zoom1.jpg",
-//     price: 129.9,
-//     quantity: 3,
-//   },
-//   {
-//     id: "3",
-//     name: "Tenis muito legal",
-//     img:
-//       "https://static.netshoes.com.br/produtos/tenis-de-caminhada-leve-confortavel/06/E74-0492-006/E74-0492-006_zoom1.jpg",
-//     price: 129.9,
-//     quantity: 3,
-//   },
-//   {
-//     id: "4",
-//     name: "Tenis muito legal",
-//     img:
-//       "https://static.netshoes.com.br/produtos/tenis-de-caminhada-leve-confortavel/06/E74-0492-006/E74-0492-006_zoom1.jpg",
-//     price: 129.9,
-//     quantity: 3,
-//   },
-//   {
-//     id: "5",
-//     name: "Tenis muito legal",
-//     img:
-//       "https://static.netshoes.com.br/produtos/tenis-de-caminhada-leve-confortavel/06/E74-0492-006/E74-0492-006_zoom1.jpg",
-//     price: 129.9,
-//     quantity: 3,
-//   },
-//   {
-//     id: "6",
-//     name: "Tenis muito legal",
-//     img:
-//       "https://static.netshoes.com.br/produtos/tenis-de-caminhada-leve-confortavel/06/E74-0492-006/E74-0492-006_zoom1.jpg",
-//     price: 129.9,
-//     quantity: 3,
-//   },
-// ];
-
-export default function Home() {
+function Home({ dispatch }) {
   const [products, setProducts] = useState([]);
 
   const fetchData = async () => {
@@ -71,7 +21,16 @@ export default function Home() {
     setProducts(data);
   };
 
-  useEffect(() => fetchData(), []);
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const handleAddProduct = product => {
+    dispatch({
+      type: "ADD_TO_CART",
+      product,
+    });
+  };
 
   return (
     <ProductList>
@@ -81,7 +40,7 @@ export default function Home() {
           <strong>{product.name}</strong>
           <span>{product.formattedPrice}</span>
 
-          <button type='button'>
+          <button type='button' onClick={() => handleAddProduct(product)}>
             <div>
               <MdAddShoppingCart size={16} color='#FFF' /> {product.quantity}
             </div>
@@ -93,3 +52,5 @@ export default function Home() {
     </ProductList>
   );
 }
+
+export default connect()(Home);

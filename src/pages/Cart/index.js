@@ -6,6 +6,7 @@ import {
 } from "react-icons/md";
 
 import { Container, TableProducts, Total } from "./styles";
+import { formatPrice } from "../../util/format";
 
 const products = [
   {
@@ -57,6 +58,12 @@ const products = [
     quantity: 3,
   },
 ];
+
+const totalPrice = formatPrice(
+  products.reduce(
+    (result, current) => (result += current.price * current.quantity)
+  )
+);
 
 export default function Cart() {
   return (
@@ -110,11 +117,7 @@ export default function Cart() {
         <button type='button'>Finalizar pedido</button>
         <Total>
           <span>TOTAL</span>
-          <strong>
-            {products
-              .reduce((total, item) => (total += item.price * item.quantity), 0)
-              .toFixed(2)}
-          </strong>
+          <strong>{totalPrice}</strong>
         </Total>
       </footer>
     </Container>

@@ -24,4 +24,4 @@ Execute no terminal o comando:
 
 ## Autor
 
-(Leonardo H de Braz)[https://github.com/lhleonardo]
+[Leonardo H de Braz](https://github.com/lhleonardo)

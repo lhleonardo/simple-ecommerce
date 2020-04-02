@@ -1,5 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 import swal from "sweetalert";
 import {
   MdRemoveCircleOutline,
@@ -7,21 +8,34 @@ import {
   MdDelete,
 } from "react-icons/md";
 
+import * as CartActions from "../../store/modules/cart/actions";
+
+import { formatPrice } from "../../util/format";
+
 import { Container, TableProducts, Total } from "./styles";
-function Cart({ products, dispatch }) {
+
+function Cart({ products, total, removeFromCart, updateAmount }) {
+  console.tron.log(products);
+
   const handleRemoveProduct = async product => {
-    const choice = await swal("Deseja realmente remover o produto?", {
+    const choice = await swal({
+      title: "Deseja realmente remover o produto?",
+      text:
+        "Essa ação não poderá ser desfeita e você terá que adicioná-lo novamente.",
       buttons: ["Não", "Sim, remova"],
+      icon: "error",
     });
 
     if (choice) {
-      dispatch({
-        type: "REMOVE_FROM_CART",
-        productId: product.id,
-      });
+      removeFromCart(product.id);
     }
   };
 
+  const incrementProduct = product =>
+    updateAmount(product.id, product.amount + 1);
+
+  const decrementProduct = product =>
+    updateAmount(product.id, product.amount - 1);
   return (
     <Container>
       <TableProducts>
@@ -39,25 +53,33 @@ function Cart({ products, dispatch }) {
           {products.map(product => (
             <tr key={product.id}>
               <td>
-                <img src={product.image} alt={product.name} />
+                <div className='image'>
+                  <img src={product.image} alt={product.title} />
+                </div>
               </td>
               <td>
-                <strong>{product.name}</strong>
+                <strong>{product.title}</strong>
                 <strong>{product.formattedPrice}</strong>
               </td>
               <td>
                 <div>
-                  <button type='button'>
+                  <button
+                    type='button'
+                    onClick={() => decrementProduct(product)}
+                  >
                     <MdRemoveCircleOutline size={20} color='#5960c1' />
                   </button>
                   <input type='number' readOnly value={product.amount} />
-                  <button type='button'>
+                  <button
+                    type='button'
+                    onClick={() => incrementProduct(product)}
+                  >
                     <MdAddCircleOutline size={20} color='#5960c1' />
                   </button>
                 </div>
               </td>
               <td>
-                <span>teste</span>
+                <span>{product.subTotal}</span>
               </td>
               <td>
                 <button
@@ -76,7 +98,7 @@ function Cart({ products, dispatch }) {
         <button type='button'>Finalizar pedido</button>
         <Total>
           <span>TOTAL</span>
-          <strong>{1}</strong>
+          <strong>{total}</strong>
         </Total>
       </footer>
     </Container>
@@ -84,7 +106,19 @@ function Cart({ products, dispatch }) {
 }
 
 const mapStateToProps = state => ({
-  products: state.cart,
+  products: state.cart.map(product => ({
+    ...product,
+    subTotal: formatPrice(product.price * product.amount),
+  })),
+
+  total: formatPrice(
+    state.cart.reduce((result, product) => {
+      return result + product.price * product.amount;
+    }, 0)
+  ),
 });
 
-export default connect(mapStateToProps)(Cart);
+const mapDispatchToProps = dispatch =>
+  bindActionCreators(CartActions, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(Cart);

@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 import { MdAddShoppingCart } from "react-icons/md";
+
+import { toast } from "react-toastify";
+
 import { ProductList, Product } from "./styles";
-
 import api from "../../services/api";
-
+import * as CartActions from "../../store/modules/cart/actions";
 import { formatPrice } from "../../util/format";
 
-function Home({ dispatch }) {
+function Home({ amount, addToCartRequest }) {
   const [products, setProducts] = useState([]);
 
   const fetchData = async () => {
@@ -25,11 +28,8 @@ function Home({ dispatch }) {
     fetchData();
   }, []);
 
-  const handleAddProduct = product => {
-    dispatch({
-      type: "ADD_TO_CART",
-      product,
-    });
+  const handleAddProduct = productId => {
+    addToCartRequest(productId);
   };
 
   return (
@@ -40,9 +40,10 @@ function Home({ dispatch }) {
           <strong>{product.name}</strong>
           <span>{product.formattedPrice}</span>
 
-          <button type='button' onClick={() => handleAddProduct(product)}>
+          <button type='button' onClick={() => handleAddProduct(product.id)}>
             <div>
-              <MdAddShoppingCart size={16} color='#FFF' /> {product.quantity}
+              <MdAddShoppingCart size={16} color='#FFF' />
+              {amount[product.id] || 0}
             </div>
 
             <span>Adicionar ao carrinho</span>
@@ -53,4 +54,15 @@ function Home({ dispatch }) {
   );
 }
 
-export default connect()(Home);
+const mapStateToProps = state => ({
+  amount: state.cart.reduce((amount, product) => {
+    amount[product.id] = product.amount;
+
+    return amount;
+  }, {}),
+});
+
+const mapDispatchToProps = dispatch =>
+  bindActionCreators(CartActions, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home);

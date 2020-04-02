@@ -46,6 +46,12 @@ export const TableProducts = styled.table`
     padding: 12px;
     vertical-align: middle;
     border-bottom: 1px solid #eee;
+
+    div.image {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   }
 
   img {

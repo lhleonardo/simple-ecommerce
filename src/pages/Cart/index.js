@@ -14,7 +14,7 @@ import { formatPrice } from "../../util/format";
 
 import { Container, TableProducts, Total } from "./styles";
 
-function Cart({ products, total, removeFromCart, updateAmount }) {
+function Cart({ products, total, removeFromCart, updateAmountRequest }) {
   console.tron.log(products);
 
   const handleRemoveProduct = async product => {
@@ -32,10 +32,10 @@ function Cart({ products, total, removeFromCart, updateAmount }) {
   };
 
   const incrementProduct = product =>
-    updateAmount(product.id, product.amount + 1);
+    updateAmountRequest(product.id, product.amount + 1);
 
   const decrementProduct = product =>
-    updateAmount(product.id, product.amount - 1);
+    updateAmountRequest(product.id, product.amount - 1);
   return (
     <Container>
       <TableProducts>

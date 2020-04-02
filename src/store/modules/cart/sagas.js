@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import api from "../../../services/api";
 import { formatPrice } from "../../../util/format";
 
-import { addToCartSuccess, updateAmount } from "./actions";
+import { addToCartSuccess, updateAmountSuccess } from "./actions";
 
 // interceptador, middleware, generator do redux-saga
 function* addToCart({ productId }) {
@@ -28,7 +28,7 @@ function* addToCart({ productId }) {
   }
 
   if (productExists) {
-    yield put(updateAmount(productId, amount));
+    yield put(updateAmountSuccess(productId, amount));
   } else {
     // faz operações com promises a partir do call
     // ele quem manipula chamadas a partir dos generators
@@ -47,6 +47,22 @@ function* addToCart({ productId }) {
   }
 }
 
+function* updateAmount({ productId, amount }) {
+  if (amount <= 0) return;
+
+  const stock = yield call(api.get, `/stock/${productId}`);
+  const stockAmount = stock.data.amount;
+
+  if (amount > stockAmount) {
+    toast.error("Quantidade solicitada for de estoque");
+    return;
+  }
+
+  yield put(updateAmountSuccess(productId, amount));
+}
 // takeLatest - apenas ultima "solicitação" atendida.
 // ex: usuário clica varias vezes em adicionar ao carrinho em intervalo curto de tempo
-export default all([takeLatest("@cart/ADD_REQUEST", addToCart)]);
+export default all([
+  takeLatest("@cart/ADD_REQUEST", addToCart),
+  takeLatest("@cart/UPDATE_AMOUNT_REQUEST", updateAmount),
+]);

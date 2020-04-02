@@ -7,7 +7,7 @@ Projeto simples de uma loja online com manipulação centralizada e dinâmica de
 ### API 
 Esse projeto conta com um arquivo json para ser utilizado na biblioteca [json-server](https://github.com/typicode/json-server).
 
-Execute o comando abaixo no terminal: 
+Execute o comando no terminal: 
 `npx json-server ./fake-api.json`
 
 Para mais informações (porta, delay, etc) acesse a documentação da biblioteca.

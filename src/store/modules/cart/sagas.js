@@ -3,6 +3,7 @@ import { call, select, put, all, takeLatest } from "redux-saga/effects";
 import { toast } from "react-toastify";
 
 import api from "../../../services/api";
+import history from "../../../services/history";
 import { formatPrice } from "../../../util/format";
 
 import { addToCartSuccess, updateAmountSuccess } from "./actions";
@@ -44,6 +45,9 @@ function* addToCart({ productId }) {
     // put faz um "redirecionamento" de actions, chamando
     // outro reducer a partir do action
     yield put(addToCartSuccess(data));
+
+    toast.info("Produto adicionado ao carrinho");
+    history.push("/cart");
   }
 }
 
